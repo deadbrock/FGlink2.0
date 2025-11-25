@@ -1,0 +1,137 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("VENDEDOR")
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  proposals   Proposal[]
+  commissions Commission[]
+}
+
+model Client {
+  id           String   @id @default(cuid())
+  name         String
+  cnpj         String?  @unique
+  cpf          String?  @unique
+  email        String
+  phone        String
+  address      String?
+  city         String?
+  state        String?
+  zipCode      String?
+  contactName  String?
+  observations String?
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  proposals Proposal[]
+}
+
+model Proposal {
+  id              String   @id @default(cuid())
+  number          String   @unique
+  clientId        String
+  userId          String
+  title           String
+  description     String?
+  status          String   @default("EM_ANALISE")
+  serviceType     String
+  contractType    String
+  startDate       DateTime?
+  endDate         DateTime?
+  totalValue      Float
+  observations    String?
+  rejectionReason String?
+  pdfTemplateId   String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  client      Client         @relation(fields: [clientId], references: [id])
+  user        User           @relation(fields: [userId], references: [id])
+  items       ProposalItem[]
+  commission  Commission?
+  pdfTemplate PDFTemplate?   @relation(fields: [pdfTemplateId], references: [id])
+}
+
+model ProposalItem {
+  id          String   @id @default(cuid())
+  proposalId  String
+  description String
+  quantity    Float
+  unitPrice   Float
+  totalPrice  Float
+  createdAt   DateTime @default(now())
+
+  proposal Proposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+}
+
+model Commission {
+  id           String    @id @default(cuid())
+  proposalId   String    @unique
+  userId       String
+  baseValue    Float
+  percentage   Float
+  amount       Float
+  status       String    @default("PENDENTE")
+  paidAt       DateTime?
+  observations String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  proposal Proposal @relation(fields: [proposalId], references: [id])
+  user     User     @relation(fields: [userId], references: [id])
+}
+
+model ProposalTemplate {
+  id           String   @id @default(cuid())
+  name         String
+  description  String?
+  serviceType  String
+  contractType String
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  items ProposalTemplateItem[]
+}
+
+model ProposalTemplateItem {
+  id          String   @id @default(cuid())
+  templateId  String
+  description String
+  quantity    Float
+  unitPrice   Float
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  template ProposalTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+}
+
+model PDFTemplate {
+  id          String     @id @default(cuid())
+  name        String
+  fileName    String
+  description String?
+  active      Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  proposals Proposal[]
+}
