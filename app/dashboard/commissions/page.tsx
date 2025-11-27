@@ -13,7 +13,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
-import { Search, DollarSign, TrendingUp, Clock, CheckCircle } from 'lucide-react'
+import { Search, DollarSign, TrendingUp, Clock, CheckCircle, Eye } from 'lucide-react'
 import { formatCurrency, formatDate } from '@/lib/utils'
 import {
   Select,
@@ -22,6 +22,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { ReceiveCommissionDialog } from '@/components/commissions/receive-commission-dialog'
+import { InstallmentsDialog } from '@/components/commissions/installments-dialog'
 
 interface Commission {
   id: string
@@ -29,8 +31,10 @@ interface Commission {
   percentage: number
   amount: number
   status: string
+  paymentType?: string
+  installments?: number
   createdAt: string
-  paidAt?: string
+  receivedAt?: string
   proposal: {
     number: string
     title: string
@@ -41,11 +45,19 @@ interface Commission {
   user: {
     name: string
   }
+  installmentsPaid?: {
+    id: string
+    installmentNumber: number
+    amount: number
+    status: string
+    receivedAt?: string
+  }[]
 }
 
 const statusMap: Record<string, { label: string; variant: any }> = {
   PENDENTE: { label: 'Pendente', variant: 'warning' },
-  PAGA: { label: 'Paga', variant: 'success' },
+  RECEBIDA: { label: 'Recebida', variant: 'success' },
+  PARCIAL: { label: 'Parcial', variant: 'secondary' },
   CANCELADA: { label: 'Cancelada', variant: 'destructive' },
 }
 
@@ -55,10 +67,13 @@ export default function CommissionsPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('ALL')
   const [loading, setLoading] = useState(true)
+  const [selectedCommission, setSelectedCommission] = useState<Commission | null>(null)
+  const [receiveDialogOpen, setReceiveDialogOpen] = useState(false)
+  const [installmentsDialogOpen, setInstallmentsDialogOpen] = useState(false)
   const [stats, setStats] = useState({
     total: 0,
     pending: 0,
-    paid: 0,
+    received: 0,
     thisMonth: 0,
   })
 
@@ -98,17 +113,14 @@ export default function CommissionsPage() {
     }
   }
 
-  const handlePayCommission = async (id: string) => {
-    if (!confirm('Confirmar pagamento desta comissão?')) return
+  const handleOpenReceiveDialog = (commission: Commission) => {
+    setSelectedCommission(commission)
+    setReceiveDialogOpen(true)
+  }
 
-    try {
-      await fetch(`/api/commissions/${id}/pay`, {
-        method: 'PUT',
-      })
-      fetchCommissions()
-    } catch (error) {
-      console.error('Error paying commission:', error)
-    }
+  const handleOpenInstallmentsDialog = (commission: Commission) => {
+    setSelectedCommission(commission)
+    setInstallmentsDialogOpen(true)
   }
 
   if (loading) {
@@ -151,14 +163,14 @@ export default function CommissionsPage() {
         <Card className="border-l-4 border-l-yellow-500">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Pendentes
+              A Receber
             </CardTitle>
             <Clock className="h-4 w-4 text-yellow-500" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatCurrency(stats.pending)}</div>
             <p className="text-xs text-muted-foreground mt-1">
-              Aguardando pagamento
+              Aguardando recebimento
             </p>
           </CardContent>
         </Card>
@@ -166,14 +178,14 @@ export default function CommissionsPage() {
         <Card className="border-l-4 border-l-green-500">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Pagas
+              Recebidas
             </CardTitle>
             <CheckCircle className="h-4 w-4 text-green-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(stats.paid)}</div>
+            <div className="text-2xl font-bold">{formatCurrency(stats.received)}</div>
             <p className="text-xs text-muted-foreground mt-1">
-              Já pagas
+              Já recebidas
             </p>
           </CardContent>
         </Card>
@@ -213,7 +225,8 @@ export default function CommissionsPage() {
               <SelectContent>
                 <SelectItem value="ALL">Todos os Status</SelectItem>
                 <SelectItem value="PENDENTE">Pendente</SelectItem>
-                <SelectItem value="PAGA">Paga</SelectItem>
+                <SelectItem value="PARCIAL">Parcial</SelectItem>
+                <SelectItem value="RECEBIDA">Recebida</SelectItem>
                 <SelectItem value="CANCELADA">Cancelada</SelectItem>
               </SelectContent>
             </Select>
@@ -232,6 +245,7 @@ export default function CommissionsPage() {
                 <TableHead>Valor Base</TableHead>
                 <TableHead>%</TableHead>
                 <TableHead>Comissão</TableHead>
+                <TableHead>Forma</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Data</TableHead>
                 <TableHead className="text-right">Ações</TableHead>
@@ -245,53 +259,106 @@ export default function CommissionsPage() {
                   </TableCell>
                 </TableRow>
               ) : (
-                filteredCommissions.map((commission) => (
-                  <TableRow key={commission.id}>
-                    <TableCell>
-                      <div>
-                        <p className="font-mono text-sm">{commission.proposal.number}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {commission.proposal.title}
-                        </p>
-                      </div>
-                    </TableCell>
-                    <TableCell>{commission.proposal.client.name}</TableCell>
-                    <TableCell className="font-medium">{commission.user.name}</TableCell>
-                    <TableCell>{formatCurrency(commission.baseValue)}</TableCell>
-                    <TableCell>
-                      <Badge variant="secondary">{commission.percentage}%</Badge>
-                    </TableCell>
-                    <TableCell className="font-semibold text-green-600">
-                      {formatCurrency(commission.amount)}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={statusMap[commission.status]?.variant}>
-                        {statusMap[commission.status]?.label}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
-                      {commission.paidAt
-                        ? `Paga em ${formatDate(commission.paidAt)}`
-                        : formatDate(commission.createdAt)}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {commission.status === 'PENDENTE' && (
-                        <Button
-                          size="sm"
-                          onClick={() => handlePayCommission(commission.id)}
-                        >
-                          <CheckCircle className="h-4 w-4 mr-2" />
-                          Pagar
-                        </Button>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))
+                filteredCommissions.map((commission) => {
+                  const receivedInstallments = commission.installmentsPaid?.filter(i => i.status === 'RECEBIDA').length || 0
+                  const totalInstallments = commission.installments || 1
+                  
+                  return (
+                    <TableRow key={commission.id}>
+                      <TableCell>
+                        <div>
+                          <p className="font-mono text-sm">{commission.proposal.number}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {commission.proposal.title}
+                          </p>
+                        </div>
+                      </TableCell>
+                      <TableCell>{commission.proposal.client.name}</TableCell>
+                      <TableCell className="font-medium">{commission.user.name}</TableCell>
+                      <TableCell>{formatCurrency(commission.baseValue)}</TableCell>
+                      <TableCell>
+                        <Badge variant="secondary">{commission.percentage}%</Badge>
+                      </TableCell>
+                      <TableCell className="font-semibold text-green-600">
+                        {formatCurrency(commission.amount)}
+                      </TableCell>
+                      <TableCell>
+                        {commission.paymentType === 'PARCELADO' ? (
+                          <div className="text-xs">
+                            <Badge variant="outline" className="mb-1">
+                              {totalInstallments}x
+                            </Badge>
+                            <p className="text-muted-foreground">
+                              {receivedInstallments}/{totalInstallments}
+                            </p>
+                          </div>
+                        ) : commission.paymentType === 'A_VISTA' ? (
+                          <Badge variant="outline">À Vista</Badge>
+                        ) : (
+                          <span className="text-xs text-muted-foreground">-</span>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={statusMap[commission.status]?.variant}>
+                          {statusMap[commission.status]?.label}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        {commission.receivedAt
+                          ? `Recebida em ${formatDate(commission.receivedAt)}`
+                          : formatDate(commission.createdAt)}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex gap-2 justify-end">
+                          {commission.status === 'PENDENTE' && (
+                            <Button
+                              size="sm"
+                              onClick={() => handleOpenReceiveDialog(commission)}
+                              className="bg-green-600 hover:bg-green-700"
+                            >
+                              <CheckCircle className="h-4 w-4 mr-2" />
+                              Receber
+                            </Button>
+                          )}
+                          {commission.paymentType === 'PARCELADO' && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleOpenInstallmentsDialog(commission)}
+                              title="Ver Parcelas"
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )
+                })
               )}
             </TableBody>
           </Table>
         </CardContent>
       </Card>
+
+      {/* Dialog de Recebimento */}
+      {selectedCommission && (
+        <>
+          <ReceiveCommissionDialog
+            open={receiveDialogOpen}
+            onOpenChange={setReceiveDialogOpen}
+            commission={selectedCommission}
+            onSuccess={fetchCommissions}
+          />
+
+          <InstallmentsDialog
+            open={installmentsDialogOpen}
+            onOpenChange={setInstallmentsDialogOpen}
+            commission={selectedCommission}
+            onSuccess={fetchCommissions}
+          />
+        </>
+      )}
     </div>
   )
 }

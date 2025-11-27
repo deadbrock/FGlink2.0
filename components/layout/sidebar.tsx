@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useSession, signOut } from 'next-auth/react'
 import { cn } from '@/lib/utils'
 import {
   LayoutDashboard,
@@ -12,7 +13,9 @@ import {
   Settings,
   Sparkles,
   UserCircle,
+  LogOut,
 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
 const menuItems = [
   {
@@ -46,8 +49,8 @@ const menuItems = [
     icon: FileText,
   },
   {
-    title: 'Editor de PDF',
-    href: '/dashboard/pdf-editor',
+    title: 'Importar Modelo PDF',
+    href: '/dashboard/pdf-editor/upload-simple',
     icon: FileText,
   },
   {
@@ -56,14 +59,85 @@ const menuItems = [
     icon: UserCircle,
   },
   {
-    title: 'Configurações',
-    href: '/dashboard/settings',
+    title: 'Meu Perfil',
+    href: '/dashboard/profile',
     icon: Settings,
   },
 ]
 
+function UserInfo() {
+  const { data: session } = useSession()
+
+  if (!session?.user) return null
+
+  const handleLogout = () => {
+    if (confirm('Deseja sair do sistema?')) {
+      signOut({ callbackUrl: '/login' })
+    }
+  }
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center gap-3 p-3 bg-slate-800 rounded-lg">
+        {session.user.avatarUrl ? (
+          <img
+            src={session.user.avatarUrl}
+            alt={session.user.name || 'Avatar'}
+            className="w-10 h-10 rounded-full object-cover border-2 border-primary"
+          />
+        ) : (
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold">
+            {session.user.name?.charAt(0).toUpperCase()}
+          </div>
+        )}
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold text-white truncate">
+            {session.user.name}
+          </p>
+          <p className="text-xs text-slate-400 truncate">
+            {session.user.email}
+          </p>
+        </div>
+      </div>
+      <Button
+        variant="ghost"
+        className="w-full justify-start text-slate-300 hover:text-white hover:bg-slate-700/50"
+        onClick={handleLogout}
+      >
+        <LogOut className="h-4 w-4 mr-2" />
+        Sair
+      </Button>
+    </div>
+  )
+}
+
 export function Sidebar() {
   const pathname = usePathname()
+  const { data: session } = useSession()
+
+  // Filtrar itens do menu baseado no role do usuário
+  const filteredMenuItems = menuItems.filter((item) => {
+    // Itens apenas para ADMIN
+    if (item.href === '/dashboard/users' && session?.user?.role !== 'ADMIN') {
+      return false
+    }
+    if (item.href === '/dashboard/settings' && session?.user?.role !== 'ADMIN') {
+      return false
+    }
+    if (item.href === '/dashboard/templates' && session?.user?.role !== 'ADMIN') {
+      return false
+    }
+    if (item.href === '/dashboard/pdf-editor' && session?.user?.role !== 'ADMIN') {
+      return false
+    }
+    if (item.href === '/dashboard/pdf-editor/upload-simple' && session?.user?.role !== 'ADMIN') {
+      return false
+    }
+    if (item.href === '/dashboard/reports' && session?.user?.role === 'VENDEDOR') {
+      return false
+    }
+    return true
+  })
 
   return (
     <div className="flex h-full w-64 flex-col bg-gradient-to-b from-slate-900 to-slate-800 text-white">
@@ -87,7 +161,7 @@ export function Sidebar() {
         </div>
       </div>
       <nav className="flex-1 space-y-1 px-3 py-4">
-        {menuItems.map((item) => {
+        {filteredMenuItems.map((item) => {
           const Icon = item.icon
           const isActive = pathname === item.href
           return (
@@ -108,10 +182,7 @@ export function Sidebar() {
         })}
       </nav>
       <div className="border-t border-slate-700 p-4">
-        <div className="text-xs text-slate-400">
-          <p>Sistema Comercial</p>
-          <p className="mt-1">Serviços de Limpeza Profissional</p>
-        </div>
+        <UserInfo />
       </div>
     </div>
   )

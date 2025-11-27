@@ -189,9 +189,9 @@ export function ProposalViewDialog({ open, onClose, proposal }: ProposalViewDial
                 <TableHeader>
                   <TableRow>
                     <TableHead>Descrição</TableHead>
-                    <TableHead className="text-right">Quantidade</TableHead>
-                    <TableHead className="text-right">Valor Unitário</TableHead>
-                    <TableHead className="text-right">Total</TableHead>
+                    <TableHead className="text-right">Quant. de Postos</TableHead>
+                    <TableHead className="text-right">Valor Unit. do Posto</TableHead>
+                    <TableHead className="text-right">Total Mensal</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -215,7 +215,7 @@ export function ProposalViewDialog({ open, onClose, proposal }: ProposalViewDial
             <CardContent className="pt-6">
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-lg font-semibold">Valor Total</span>
+                  <span className="text-lg font-semibold">Valor Total Mensal</span>
                   <span className="text-2xl font-bold text-primary">
                     {formatCurrency(proposal.totalValue)}
                   </span>

@@ -17,6 +17,7 @@ model User {
   password  String
   role      String   @default("VENDEDOR")
   active    Boolean  @default(true)
+  avatarUrl String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -83,20 +84,23 @@ model ProposalItem {
 }
 
 model Commission {
-  id           String    @id @default(cuid())
-  proposalId   String    @unique
-  userId       String
-  baseValue    Float
-  percentage   Float
-  amount       Float
-  status       String    @default("PENDENTE")
-  paidAt       DateTime?
-  observations String?
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  id              String    @id @default(cuid())
+  proposalId      String    @unique
+  userId          String
+  baseValue       Float
+  percentage      Float
+  amount          Float
+  status          String    @default("PENDENTE")
+  paymentType     String?   // "A_VISTA" ou "PARCELADO"
+  installments    Int?      // Número de parcelas
+  receivedAt      DateTime?
+  observations    String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
-  proposal Proposal @relation(fields: [proposalId], references: [id])
-  user     User     @relation(fields: [userId], references: [id])
+  proposal          Proposal               @relation(fields: [proposalId], references: [id])
+  user              User                   @relation(fields: [userId], references: [id])
+  installmentsPaid  CommissionInstallment[]
 }
 
 model ProposalTemplate {
@@ -134,4 +138,19 @@ model PDFTemplate {
   updatedAt   DateTime   @updatedAt
 
   proposals Proposal[]
+}
+
+model CommissionInstallment {
+  id            String    @id @default(cuid())
+  commissionId  String
+  installmentNumber Int
+  amount        Float
+  dueDate       DateTime?
+  receivedAt    DateTime?
+  status        String    @default("PENDENTE") // "PENDENTE", "RECEBIDA"
+  observations  String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  commission Commission @relation(fields: [commissionId], references: [id], onDelete: Cascade)
 }

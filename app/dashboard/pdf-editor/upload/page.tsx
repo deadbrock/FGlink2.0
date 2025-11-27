@@ -1,18 +1,24 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Upload, FileText, Eye, Download, Trash2, Settings } from 'lucide-react'
+import { Upload, FileText, Eye, Download, Trash2, Settings, MousePointer, ChevronLeft, ChevronRight } from 'lucide-react'
 
 export default function PDFUploadPage() {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null)
+  const [uploadedFileName, setUploadedFileName] = useState<string | null>(null)
   const [pdfUrl, setPdfUrl] = useState<string | null>(null)
   const [fields, setFields] = useState<any[]>([])
   const [uploading, setUploading] = useState(false)
+  const [activeFieldId, setActiveFieldId] = useState<number | null>(null)
+  const [clickMode, setClickMode] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pdfKey, setPdfKey] = useState(0) // Para forçar reload do iframe
+  const iframeRef = useRef<HTMLIFrameElement>(null)
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -40,6 +46,8 @@ export default function PDFUploadPage() {
 
       if (response.ok) {
         const data = await response.json()
+        setUploadedFileName(data.fileName) // Salvar o fileName retornado pela API
+        console.log('✅ PDF enviado, fileName:', data.fileName)
         alert('✅ PDF enviado com sucesso!')
       } else {
         alert('❌ Erro ao enviar PDF')
@@ -53,14 +61,43 @@ export default function PDFUploadPage() {
   }
 
   const handleAddField = () => {
-    setFields([...fields, {
+    const newField = {
       id: Date.now(),
       name: '',
       type: 'text',
       x: 0,
       y: 0,
       page: 1,
-    }])
+    }
+    setFields([...fields, newField])
+    setActiveFieldId(newField.id)
+    setClickMode(true)
+    alert('✅ Campo adicionado!\n\n📍 Agora clique no PDF onde deseja posicionar este campo.')
+  }
+
+  const handlePDFClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!clickMode || !activeFieldId) return
+
+    const rect = e.currentTarget.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
+
+    console.log('📍 Clique no PDF:', { x, y, page: currentPage })
+
+    // Atualizar coordenadas do campo ativo
+    const newFields = fields.map(f =>
+      f.id === activeFieldId ? { 
+        ...f, 
+        x: Math.round(x), 
+        y: Math.round(y),
+        page: currentPage 
+      } : f
+    )
+    setFields(newFields)
+    setClickMode(false)
+    setActiveFieldId(null)
+    
+    alert(`✅ Posição definida!\n\nPágina: ${currentPage}\nX: ${Math.round(x)}\nY: ${Math.round(y)}`)
   }
 
   const handleRemoveField = (id: number) => {
@@ -68,7 +105,7 @@ export default function PDFUploadPage() {
   }
 
   const handleSaveTemplate = async () => {
-    if (!uploadedFile) {
+    if (!uploadedFile || !uploadedFileName) {
       alert('❌ Nenhum PDF carregado')
       return
     }
@@ -76,13 +113,19 @@ export default function PDFUploadPage() {
     const templateName = prompt('Digite um nome para este template:', uploadedFile.name.replace('.pdf', ''))
     if (!templateName) return
 
+    console.log('💾 Salvando template:', {
+      name: templateName,
+      fileName: uploadedFileName, // Usar o fileName retornado pela API
+      fieldsCount: fields.length,
+    })
+
     try {
       const response = await fetch('/api/pdf-template/save', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: templateName,
-          fileName: uploadedFile.name,
+          fileName: uploadedFileName, // IMPORTANTE: Usar o fileName correto (ex: template-123456.pdf)
           description: `Template importado em ${new Date().toLocaleDateString('pt-BR')}`,
           fields: fields,
         }),
@@ -215,10 +258,13 @@ export default function PDFUploadPage() {
                       </p>
                     ) : (
                       fields.map((field) => (
-                        <div key={field.id} className="border rounded-lg p-3">
+                        <div 
+                          key={field.id} 
+                          className={`border rounded-lg p-3 ${activeFieldId === field.id ? 'ring-2 ring-blue-400 bg-blue-50' : ''}`}
+                        >
                           <div className="flex items-center justify-between mb-2">
                             <Input
-                              placeholder="Nome do campo"
+                              placeholder="Nome do campo (ex: empresa, fone)"
                               value={field.name}
                               onChange={(e) => {
                                 const newFields = fields.map(f =>
@@ -236,7 +282,7 @@ export default function PDFUploadPage() {
                               <Trash2 className="h-4 w-4" />
                             </Button>
                           </div>
-                          <div className="grid grid-cols-2 gap-2 text-sm">
+                          <div className="grid grid-cols-2 gap-2 text-sm mb-2">
                             <div>
                               <Label>Tipo</Label>
                               <select
@@ -270,6 +316,22 @@ export default function PDFUploadPage() {
                               />
                             </div>
                           </div>
+                          <div className="flex items-center justify-between text-xs text-slate-500 bg-slate-50 p-2 rounded">
+                            <span>Página {field.page} • X={field.x}, Y={field.y}</span>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => {
+                                setActiveFieldId(field.id)
+                                setClickMode(true)
+                                setCurrentPage(field.page) // Ir para a página do campo
+                              }}
+                              className="h-6 text-xs"
+                            >
+                              <MousePointer className="h-3 w-3 mr-1" />
+                              Reposicionar
+                            </Button>
+                          </div>
                         </div>
                       ))
                     )}
@@ -290,12 +352,68 @@ export default function PDFUploadPage() {
 
                 {/* Preview do PDF */}
                 <div>
-                  <h3 className="font-semibold mb-4">Preview do PDF:</h3>
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="font-semibold">Preview do PDF:</h3>
+                    {clickMode && (
+                      <div className="flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1 rounded-lg text-sm font-medium animate-pulse">
+                        <MousePointer className="h-4 w-4" />
+                        Clique no PDF para posicionar
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Controles de Navegação */}
+                  <div className="flex items-center justify-center gap-4 mb-3 bg-slate-100 p-2 rounded-lg">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        const newPage = Math.max(1, currentPage - 1)
+                        setCurrentPage(newPage)
+                        setPdfKey(prev => prev + 1) // Força reload
+                      }}
+                      disabled={currentPage === 1}
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium">Página</span>
+                      <Input
+                        type="number"
+                        min="1"
+                        value={currentPage}
+                        onChange={(e) => {
+                          const newPage = parseInt(e.target.value) || 1
+                          setCurrentPage(newPage)
+                          setPdfKey(prev => prev + 1) // Força reload
+                        }}
+                        className="w-16 text-center"
+                      />
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        const newPage = currentPage + 1
+                        setCurrentPage(newPage)
+                        setPdfKey(prev => prev + 1) // Força reload
+                      }}
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+
                   {pdfUrl ? (
-                    <div className="border rounded-lg overflow-hidden" style={{ height: '600px' }}>
+                    <div 
+                      className={`border rounded-lg overflow-hidden relative ${clickMode ? 'cursor-crosshair ring-4 ring-blue-400' : ''}`}
+                      style={{ height: '600px' }}
+                      onClick={handlePDFClick}
+                    >
                       <iframe
-                        src={pdfUrl}
-                        className="w-full h-full"
+                        key={pdfKey} // Força recriação do iframe
+                        ref={iframeRef}
+                        src={`${pdfUrl}#page=${currentPage}`}
+                        className="w-full h-full pointer-events-none"
                         title="PDF Preview"
                       />
                     </div>
@@ -303,6 +421,11 @@ export default function PDFUploadPage() {
                     <div className="border rounded-lg h-96 flex items-center justify-center text-slate-400">
                       <p>Carregando preview...</p>
                     </div>
+                  )}
+                  {clickMode && (
+                    <p className="text-sm text-blue-600 mt-2 text-center">
+                      💡 Dica: Clique exatamente onde o texto deve aparecer no PDF
+                    </p>
                   )}
                 </div>
               </div>

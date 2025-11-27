@@ -111,8 +111,10 @@ async function main() {
       baseValue: 15000,
       percentage: 5,
       amount: 750,
-      status: 'PAGA',
-      paidAt: new Date(),
+      status: 'RECEBIDA',
+      paymentType: 'A_VISTA',
+      installments: 1,
+      receivedAt: new Date(),
     },
   })
   console.log('✅ Comissão criada:', commission.amount)

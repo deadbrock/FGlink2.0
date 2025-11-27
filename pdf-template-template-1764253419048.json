@@ -1,0 +1,22 @@
+{
+  "fileName": "template-1764253419048.pdf",
+  "fields": [
+    {
+      "id": 1764253817852,
+      "name": "itens",
+      "type": "table",
+      "x": 0,
+      "y": 0,
+      "page": 14
+    },
+    {
+      "id": 1764254106063,
+      "name": "valorTotalMensal",
+      "type": "number",
+      "x": 0,
+      "y": 0,
+      "page": 14
+    }
+  ],
+  "createdAt": "2025-11-27T14:35:33.040Z"
+}

@@ -1,10 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { calculateCommission } from '@/lib/utils'
+import { getCurrentUser } from '@/lib/auth'
 
 export async function GET() {
   try {
+    const currentUser = await getCurrentUser()
+    
+    if (!currentUser) {
+      return NextResponse.json(
+        { error: 'Não autenticado' },
+        { status: 401 }
+      )
+    }
+
+    // Se for ADMIN, mostra todas as propostas
+    // Se for VENDEDOR, mostra apenas suas propostas
+    const where = currentUser.role === 'ADMIN' 
+      ? {} 
+      : { userId: currentUser.id }
+
     const proposals = await prisma.proposal.findMany({
+      where,
       include: {
         client: {
           select: {
@@ -19,8 +36,12 @@ export async function GET() {
       },
       orderBy: { createdAt: 'desc' }
     })
+
+    console.log(`📋 Propostas carregadas para ${currentUser.name} (${currentUser.role}): ${proposals.length}`)
+    
     return NextResponse.json(proposals)
   } catch (error) {
+    console.error('Erro ao buscar propostas:', error)
     return NextResponse.json(
       { error: 'Failed to fetch proposals' },
       { status: 500 }
@@ -38,6 +59,7 @@ export async function POST(request: NextRequest) {
         number: body.number,
         clientId: body.clientId,
         userId: body.userId,
+        pdfTemplateId: body.pdfTemplateId || null,
         title: body.title,
         description: body.description || null,
         status: 'EM_ANALISE',

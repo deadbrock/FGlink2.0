@@ -259,6 +259,7 @@ export default function ProposalsPage() {
                           variant="ghost"
                           size="icon"
                           onClick={() => handleView(proposal)}
+                          title="Visualizar"
                         >
                           <Eye className="h-4 w-4" />
                         </Button>
@@ -266,6 +267,7 @@ export default function ProposalsPage() {
                           variant="ghost"
                           size="icon"
                           onClick={() => handleEdit(proposal)}
+                          title="Editar"
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
@@ -273,6 +275,7 @@ export default function ProposalsPage() {
                           variant="ghost"
                           size="icon"
                           onClick={() => handleDelete(proposal.id)}
+                          title="Excluir"
                         >
                           <Trash2 className="h-4 w-4 text-destructive" />
                         </Button>

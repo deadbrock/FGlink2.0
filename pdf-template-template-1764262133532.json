@@ -1,0 +1,46 @@
+{
+  "fileName": "template-1764262133532.pdf",
+  "fields": [
+    {
+      "id": 1764262151894,
+      "name": "empresa",
+      "type": "text",
+      "x": 479,
+      "y": 193,
+      "page": 14
+    },
+    {
+      "id": 1764262171590,
+      "name": "fone",
+      "type": "number",
+      "x": 620,
+      "y": 192,
+      "page": 14
+    },
+    {
+      "id": 1764262193976,
+      "name": "contato",
+      "type": "text",
+      "x": 513,
+      "y": 233,
+      "page": 14
+    },
+    {
+      "id": 1764262224180,
+      "name": "email",
+      "type": "text",
+      "x": 641,
+      "y": 233,
+      "page": 14
+    },
+    {
+      "id": 1764262244756,
+      "name": "itens",
+      "type": "table",
+      "x": 460,
+      "y": 306,
+      "page": 14
+    }
+  ],
+  "createdAt": "2025-11-27T16:51:06.564Z"
+}

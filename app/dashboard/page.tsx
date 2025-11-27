@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useSession } from 'next-auth/react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { 
   Users, 
@@ -63,12 +64,18 @@ export default function DashboardPage() {
     }
   }
 
+  const { data: session } = useSession()
+
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-slate-900">Dashboard</h1>
+        <h1 className="text-3xl font-bold text-slate-900">
+          Olá, {session?.user?.name || 'Usuário'}! 👋
+        </h1>
         <p className="text-slate-500 mt-1">
-          Visão geral do seu negócio
+          {session?.user?.role === 'ADMIN' 
+            ? 'Visão geral do negócio' 
+            : 'Suas propostas e comissões'}
         </p>
       </div>
 

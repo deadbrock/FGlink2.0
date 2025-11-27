@@ -56,6 +56,7 @@ export async function PUT(
       where: { id: params.id },
       data: {
         clientId: body.clientId,
+        pdfTemplateId: body.pdfTemplateId || null,
         title: body.title,
         description: body.description || null,
         serviceType: body.serviceType,

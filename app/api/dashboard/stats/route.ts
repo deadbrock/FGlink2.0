@@ -1,33 +1,60 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { getCurrentUser } from '@/lib/auth'
 
 export async function GET() {
   try {
-    // Get total clients
-    const totalClients = await prisma.client.count({
-      where: { active: true }
-    })
+    const currentUser = await getCurrentUser()
+    
+    if (!currentUser) {
+      return NextResponse.json(
+        { error: 'Não autenticado' },
+        { status: 401 }
+      )
+    }
+
+    // Se for VENDEDOR, filtra por userId
+    const userFilter = currentUser.role === 'ADMIN' 
+      ? {} 
+      : { userId: currentUser.id }
+
+    // Get total clients (apenas admin vê todos)
+    const totalClients = currentUser.role === 'ADMIN' 
+      ? await prisma.client.count({ where: { active: true } })
+      : await prisma.client.count({ 
+          where: { 
+            active: true,
+            proposals: {
+              some: { userId: currentUser.id }
+            }
+          }
+        })
 
     // Get total proposals
-    const totalProposals = await prisma.proposal.count()
+    const totalProposals = await prisma.proposal.count({
+      where: userFilter
+    })
 
     // Get proposals by status
     const pendingProposals = await prisma.proposal.count({
-      where: { status: 'EM_ANALISE' }
+      where: { ...userFilter, status: 'EM_ANALISE' }
     })
 
     const approvedProposals = await prisma.proposal.count({
-      where: { status: 'APROVADA' }
+      where: { ...userFilter, status: 'APROVADA' }
     })
 
     const rejectedProposals = await prisma.proposal.count({
-      where: { status: 'REJEITADA' }
+      where: { ...userFilter, status: 'REJEITADA' }
     })
 
     // Get total commissions
     const commissionsSum = await prisma.commission.aggregate({
       _sum: { amount: true },
-      where: { status: 'PAGA' }
+      where: { 
+        ...userFilter,
+        status: 'PAGA' 
+      }
     })
 
     // Get monthly revenue (current month)
@@ -36,6 +63,7 @@ export async function GET() {
     const monthlyRevenueSum = await prisma.proposal.aggregate({
       _sum: { totalValue: true },
       where: {
+        ...userFilter,
         status: 'APROVADA',
         createdAt: { gte: firstDayOfMonth }
       }
@@ -48,7 +76,9 @@ export async function GET() {
       { name: 'Rejeitadas', value: rejectedProposals },
       { 
         name: 'Em Negociação', 
-        value: await prisma.proposal.count({ where: { status: 'EM_NEGOCIACAO' }})
+        value: await prisma.proposal.count({ 
+          where: { ...userFilter, status: 'EM_NEGOCIACAO' }
+        })
       },
     ]
 
@@ -61,6 +91,7 @@ export async function GET() {
       const revenue = await prisma.proposal.aggregate({
         _sum: { totalValue: true },
         where: {
+          ...userFilter,
           status: 'APROVADA',
           createdAt: {
             gte: date,
@@ -90,11 +121,11 @@ export async function GET() {
     const proposalsByService = await Promise.all(
       serviceTypes.map(async (service) => {
         const count = await prisma.proposal.count({
-          where: { serviceType: service as any }
+          where: { ...userFilter, serviceType: service as any }
         })
         const sum = await prisma.proposal.aggregate({
           _sum: { totalValue: true },
-          where: { serviceType: service as any }
+          where: { ...userFilter, serviceType: service as any }
         })
         return {
           service: service.replace(/_/g, ' '),

@@ -390,18 +390,18 @@ export function ProposalDialog({ open, onClose, proposal }: ProposalDialogProps)
                   />
                 </div>
                 <div className="col-span-2">
-                  <Label>Quantidade</Label>
+                  <Label>Quant. de Postos</Label>
                   <Input
                     type="number"
                     min="0"
-                    step="0.01"
+                    step="1"
                     value={item.quantity}
                     onChange={(e) => handleItemChange(index, 'quantity', parseFloat(e.target.value) || 0)}
                     required
                   />
                 </div>
                 <div className="col-span-2">
-                  <Label>Valor Unit.</Label>
+                  <Label>Valor Unit. do Posto</Label>
                   <Input
                     type="number"
                     min="0"
@@ -412,7 +412,7 @@ export function ProposalDialog({ open, onClose, proposal }: ProposalDialogProps)
                   />
                 </div>
                 <div className="col-span-2">
-                  <Label>Total</Label>
+                  <Label>Total Mensal</Label>
                   <Input
                     value={item.totalPrice.toFixed(2)}
                     disabled
@@ -435,7 +435,7 @@ export function ProposalDialog({ open, onClose, proposal }: ProposalDialogProps)
 
           <div className="bg-slate-50 p-4 rounded-lg space-y-2">
             <div className="flex justify-between text-lg font-semibold">
-              <span>Valor Total:</span>
+              <span>Valor Total Mensal:</span>
               <span className="text-primary">
                 {new Intl.NumberFormat('pt-BR', {
                   style: 'currency',
@@ -467,14 +467,14 @@ export function ProposalDialog({ open, onClose, proposal }: ProposalDialogProps)
           <div>
             <Label htmlFor="pdfTemplate">Template de PDF</Label>
             <Select
-              value={formData.pdfTemplateId}
-              onValueChange={(value) => setFormData({ ...formData, pdfTemplateId: value })}
+              value={formData.pdfTemplateId || 'none'}
+              onValueChange={(value) => setFormData({ ...formData, pdfTemplateId: value === 'none' ? '' : value })}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Selecione um template (opcional)" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Usar gerador padrão</SelectItem>
+                <SelectItem value="none">Usar gerador padrão</SelectItem>
                 {pdfTemplates.map((template) => (
                   <SelectItem key={template.id} value={template.id}>
                     {template.name}

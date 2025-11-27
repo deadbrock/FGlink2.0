@@ -131,10 +131,15 @@ export default function PublicProposalPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100">
         <div className="text-center">
-          <div className="h-16 w-16 animate-spin rounded-full border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-muted-foreground">Carregando proposta...</p>
+          <div className="relative">
+            <div className="h-20 w-20 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600 mx-auto"></div>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Sparkles className="h-8 w-8 text-blue-600 animate-pulse" />
+            </div>
+          </div>
+          <p className="mt-6 text-slate-600 font-medium text-lg">Carregando proposta...</p>
         </div>
       </div>
     )
@@ -142,12 +147,15 @@ export default function PublicProposalPage() {
 
   if (!proposal) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50">
-        <Card className="max-w-md">
-          <CardContent className="pt-6 text-center">
-            <FileText className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
-            <h2 className="text-xl font-bold mb-2">Proposta não encontrada</h2>
-            <p className="text-muted-foreground">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 p-4">
+        <Card className="max-w-md border-none shadow-2xl">
+          <div className="bg-gradient-to-r from-red-600 to-rose-600 h-2"></div>
+          <CardContent className="pt-12 pb-12 text-center">
+            <div className="inline-flex p-6 bg-red-100 rounded-full mb-6">
+              <FileText className="h-16 w-16 text-red-600" />
+            </div>
+            <h2 className="text-3xl font-bold mb-4 text-slate-800">Proposta não encontrada</h2>
+            <p className="text-slate-600 text-lg leading-relaxed">
               A proposta que você está procurando não existe ou foi removida.
             </p>
           </CardContent>
@@ -157,202 +165,231 @@ export default function PublicProposalPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8 px-4">
-      <div className="max-w-4xl mx-auto space-y-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 py-12 px-4">
+      <div className="max-w-5xl mx-auto space-y-8">
         {/* Header */}
-        <Card className="border-t-4 border-t-primary">
-          <CardHeader className="text-center">
-            <div className="flex flex-col items-center mb-4">
+        <Card className="border-none shadow-2xl bg-white overflow-hidden">
+          <div className="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 h-2"></div>
+          <CardHeader className="text-center pb-8 pt-10">
+            <div className="flex justify-center mb-0">
               <img 
-                src="/logo-fglink.png" 
-                alt="FGlink Logo" 
-                className="w-48 h-auto mb-4"
+                src="/logo-fgservices.png" 
+                alt="FG Services" 
+                className="h-41 w-41"
                 onError={(e) => {
                   e.currentTarget.style.display = 'none'
-                  const fallback = e.currentTarget.nextElementSibling as HTMLElement
-                  if (fallback) fallback.style.display = 'flex'
                 }}
               />
-              <div className="hidden items-center justify-center w-16 h-16 bg-primary rounded-xl mb-4">
-                <Sparkles className="w-8 h-8 text-white" />
-              </div>
-              <h1 className="text-3xl font-bold text-primary">FGlink</h1>
-              <p className="text-sm text-muted-foreground">Serviços de Limpeza Profissional</p>
             </div>
-            <CardTitle className="text-3xl">Proposta Comercial</CardTitle>
-            <div className="flex items-center justify-center gap-2 mt-4">
-              <Badge variant="secondary" className="text-lg px-4 py-1">
-                {proposal.number}
-              </Badge>
+            <div className="space-y-3">
+              <CardTitle className="text-4xl font-bold text-slate-800">Proposta Comercial</CardTitle>
+              <div className="flex items-center justify-center gap-2">
+                <Badge className="text-lg px-6 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700">
+                  {proposal.number}
+                </Badge>
+              </div>
             </div>
           </CardHeader>
         </Card>
 
         {/* Cliente */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Building2 className="h-5 w-5 text-primary" />
+        <Card className="border-none shadow-lg hover:shadow-xl transition-shadow duration-300">
+          <CardHeader className="bg-gradient-to-r from-slate-50 to-blue-50 border-b">
+            <CardTitle className="flex items-center gap-3 text-xl">
+              <div className="p-2 bg-blue-600 rounded-lg">
+                <Building2 className="h-5 w-5 text-white" />
+              </div>
               Dados do Cliente
             </CardTitle>
           </CardHeader>
-          <CardContent className="grid gap-4">
-            <div>
-              <p className="text-sm text-muted-foreground">Nome</p>
-              <p className="font-semibold">{proposal.client.name}</p>
+          <CardContent className="grid gap-6 pt-6">
+            <div className="bg-slate-50 p-4 rounded-lg">
+              <p className="text-sm text-slate-600 font-medium mb-1">Nome</p>
+              <p className="text-lg font-bold text-slate-800">{proposal.client.name}</p>
             </div>
             <div className="grid md:grid-cols-2 gap-4">
-              <div>
-                <p className="text-sm text-muted-foreground flex items-center gap-1">
-                  <Mail className="h-3 w-3" /> Email
+              <div className="bg-slate-50 p-4 rounded-lg">
+                <p className="text-sm text-slate-600 font-medium flex items-center gap-2 mb-1">
+                  <Mail className="h-4 w-4 text-blue-600" /> Email
                 </p>
-                <p className="font-semibold">{proposal.client.email}</p>
+                <p className="font-semibold text-slate-800">{proposal.client.email}</p>
               </div>
-              <div>
-                <p className="text-sm text-muted-foreground flex items-center gap-1">
-                  <Phone className="h-3 w-3" /> Telefone
+              <div className="bg-slate-50 p-4 rounded-lg">
+                <p className="text-sm text-slate-600 font-medium flex items-center gap-2 mb-1">
+                  <Phone className="h-4 w-4 text-blue-600" /> Telefone
                 </p>
-                <p className="font-semibold">{proposal.client.phone}</p>
+                <p className="font-semibold text-slate-800">{proposal.client.phone}</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
         {/* Detalhes */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <FileText className="h-5 w-5 text-primary" />
+        <Card className="border-none shadow-lg hover:shadow-xl transition-shadow duration-300">
+          <CardHeader className="bg-gradient-to-r from-slate-50 to-blue-50 border-b">
+            <CardTitle className="flex items-center gap-3 text-xl">
+              <div className="p-2 bg-blue-600 rounded-lg">
+                <FileText className="h-5 w-5 text-white" />
+              </div>
               Detalhes da Proposta
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <p className="text-sm text-muted-foreground">Título</p>
-              <p className="text-lg font-semibold">{proposal.title}</p>
+          <CardContent className="space-y-6 pt-6">
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-5 rounded-lg border border-blue-100">
+              <p className="text-sm text-slate-600 font-medium mb-2">Título</p>
+              <p className="text-xl font-bold text-slate-800">{proposal.title}</p>
             </div>
             {proposal.description && (
-              <div>
-                <p className="text-sm text-muted-foreground">Descrição</p>
-                <p>{proposal.description}</p>
+              <div className="bg-slate-50 p-5 rounded-lg">
+                <p className="text-sm text-slate-600 font-medium mb-2">Descrição</p>
+                <p className="text-slate-700 leading-relaxed">{proposal.description}</p>
               </div>
             )}
             <div className="grid md:grid-cols-3 gap-4">
-              <div>
-                <p className="text-sm text-muted-foreground">Tipo de Serviço</p>
-                <Badge variant="secondary">{proposal.serviceType.replace(/_/g, ' ')}</Badge>
+              <div className="bg-slate-50 p-4 rounded-lg">
+                <p className="text-sm text-slate-600 font-medium mb-2">Tipo de Serviço</p>
+                <Badge className="bg-blue-600 hover:bg-blue-700 text-white">
+                  {proposal.serviceType.replace(/_/g, ' ')}
+                </Badge>
               </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Tipo de Contrato</p>
-                <Badge variant={proposal.contractType === 'MOT' ? 'info' : 'secondary'}>
+              <div className="bg-slate-50 p-4 rounded-lg">
+                <p className="text-sm text-slate-600 font-medium mb-2">Tipo de Contrato</p>
+                <Badge className={proposal.contractType === 'MOT' ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-slate-600 hover:bg-slate-700'}>
                   {proposal.contractType === 'MOT' ? 'MOT' : 'Regular'}
                 </Badge>
               </div>
-              <div>
-                <p className="text-sm text-muted-foreground flex items-center gap-1">
-                  <Calendar className="h-3 w-3" /> Data de Criação
+              <div className="bg-slate-50 p-4 rounded-lg">
+                <p className="text-sm text-slate-600 font-medium flex items-center gap-2 mb-2">
+                  <Calendar className="h-4 w-4 text-blue-600" /> Data de Criação
                 </p>
-                <p className="font-semibold">{formatDate(proposal.createdAt)}</p>
+                <p className="font-bold text-slate-800">{formatDate(proposal.createdAt)}</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
         {/* Itens */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Itens da Proposta</CardTitle>
+        <Card className="border-none shadow-lg hover:shadow-xl transition-shadow duration-300">
+          <CardHeader className="bg-gradient-to-r from-slate-50 to-blue-50 border-b">
+            <CardTitle className="flex items-center gap-3 text-xl">
+              <div className="p-2 bg-blue-600 rounded-lg">
+                <FileText className="h-5 w-5 text-white" />
+              </div>
+              Itens da Proposta
+            </CardTitle>
           </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Descrição</TableHead>
-                  <TableHead className="text-right">Qtd</TableHead>
-                  <TableHead className="text-right">Valor Unit.</TableHead>
-                  <TableHead className="text-right">Total</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {proposal.items?.map((item: any, index: number) => (
-                  <TableRow key={index}>
-                    <TableCell className="font-medium">{item.description}</TableCell>
-                    <TableCell className="text-right">{item.quantity}</TableCell>
-                    <TableCell className="text-right">{formatCurrency(item.unitPrice)}</TableCell>
-                    <TableCell className="text-right font-semibold">
-                      {formatCurrency(item.totalPrice)}
-                    </TableCell>
+          <CardContent className="pt-6">
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-slate-50 hover:bg-slate-100">
+                    <TableHead className="font-bold text-slate-700">Descrição</TableHead>
+                    <TableHead className="text-right font-bold text-slate-700">Quant. de Postos</TableHead>
+                    <TableHead className="text-right font-bold text-slate-700">Valor Unit. do Posto</TableHead>
+                    <TableHead className="text-right font-bold text-slate-700">Total Mensal</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {proposal.items?.map((item: any, index: number) => (
+                    <TableRow key={index} className="hover:bg-blue-50 transition-colors">
+                      <TableCell className="font-medium text-slate-800">{item.description}</TableCell>
+                      <TableCell className="text-right text-slate-700">{item.quantity}</TableCell>
+                      <TableCell className="text-right text-slate-700">{formatCurrency(item.unitPrice)}</TableCell>
+                      <TableCell className="text-right font-bold text-blue-600">
+                        {formatCurrency(item.totalPrice)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           </CardContent>
         </Card>
 
         {/* Total */}
-        <Card className="bg-gradient-to-br from-blue-50 to-purple-50 border-primary/20">
-          <CardContent className="pt-6">
+        <Card className="border-none shadow-2xl bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-700 text-white overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32"></div>
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full -ml-24 -mb-24"></div>
+          <CardContent className="pt-8 pb-8 relative z-10">
             <div className="flex justify-between items-center">
-              <span className="text-xl font-semibold">Valor Total</span>
-              <span className="text-3xl font-bold text-primary">
-                {formatCurrency(proposal.totalValue)}
-              </span>
+              <div>
+                <p className="text-blue-100 text-sm font-medium mb-1">Valor Total da Proposta</p>
+                <span className="text-2xl font-bold">Valor Total Mensal</span>
+              </div>
+              <div className="text-right">
+                <span className="text-5xl font-black tracking-tight">
+                  {formatCurrency(proposal.totalValue)}
+                </span>
+              </div>
             </div>
           </CardContent>
         </Card>
 
         {/* Observações */}
         {proposal.observations && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Observações</CardTitle>
+          <Card className="border-none shadow-lg hover:shadow-xl transition-shadow duration-300">
+            <CardHeader className="bg-gradient-to-r from-slate-50 to-blue-50 border-b">
+              <CardTitle className="flex items-center gap-3 text-xl">
+                <div className="p-2 bg-blue-600 rounded-lg">
+                  <MessageSquare className="h-5 w-5 text-white" />
+                </div>
+                Observações
+              </CardTitle>
             </CardHeader>
-            <CardContent>
-              <p className="text-sm">{proposal.observations}</p>
+            <CardContent className="pt-6">
+              <div className="bg-amber-50 border-l-4 border-amber-400 p-5 rounded-r-lg">
+                <p className="text-slate-700 leading-relaxed">{proposal.observations}</p>
+              </div>
             </CardContent>
           </Card>
         )}
 
         {/* Actions - Only show if proposal is pending */}
         {proposal.status === 'EM_ANALISE' && (
-          <Card className="border-2 border-primary/20">
-            <CardHeader>
-              <CardTitle className="text-center">O que você deseja fazer?</CardTitle>
-              <p className="text-center text-sm text-muted-foreground">
+          <Card className="border-none shadow-2xl bg-white overflow-hidden">
+            <div className="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 h-2"></div>
+            <CardHeader className="text-center pb-6 pt-8 bg-gradient-to-br from-slate-50 to-blue-50">
+              <CardTitle className="text-3xl font-bold text-slate-800 mb-2">O que você deseja fazer?</CardTitle>
+              <p className="text-slate-600 text-base">
                 Escolha uma das opções abaixo para responder à proposta
               </p>
             </CardHeader>
-            <CardContent>
-              <div className="grid md:grid-cols-3 gap-4">
+            <CardContent className="p-8">
+              <div className="grid md:grid-cols-3 gap-6">
                 <Button
                   size="lg"
-                  className="h-auto py-6 flex-col gap-2 bg-green-600 hover:bg-green-700"
+                  className="h-auto py-8 flex-col gap-3 bg-gradient-to-br from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                   onClick={() => setActionDialog('approve')}
                 >
-                  <CheckCircle className="h-8 w-8" />
-                  <span className="text-lg font-semibold">Aprovar</span>
-                  <span className="text-xs opacity-90">Aceito a proposta</span>
+                  <div className="p-3 bg-white/20 rounded-full">
+                    <CheckCircle className="h-10 w-10" />
+                  </div>
+                  <span className="text-xl font-bold">Aprovar</span>
+                  <span className="text-sm opacity-90 font-medium">Aceito a proposta</span>
                 </Button>
 
                 <Button
                   size="lg"
-                  className="h-auto py-6 flex-col gap-2 bg-blue-600 hover:bg-blue-700"
+                  className="h-auto py-8 flex-col gap-3 bg-gradient-to-br from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                   onClick={() => setActionDialog('negotiate')}
                 >
-                  <MessageSquare className="h-8 w-8" />
-                  <span className="text-lg font-semibold">Negociar</span>
-                  <span className="text-xs opacity-90">Quero conversar</span>
+                  <div className="p-3 bg-white/20 rounded-full">
+                    <MessageSquare className="h-10 w-10" />
+                  </div>
+                  <span className="text-xl font-bold">Negociar</span>
+                  <span className="text-sm opacity-90 font-medium">Quero conversar</span>
                 </Button>
 
                 <Button
                   size="lg"
-                  variant="destructive"
-                  className="h-auto py-6 flex-col gap-2"
+                  className="h-auto py-8 flex-col gap-3 bg-gradient-to-br from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                   onClick={() => setActionDialog('reject')}
                 >
-                  <XCircle className="h-8 w-8" />
-                  <span className="text-lg font-semibold">Recusar</span>
-                  <span className="text-xs opacity-90">Não tenho interesse</span>
+                  <div className="p-3 bg-white/20 rounded-full">
+                    <XCircle className="h-10 w-10" />
+                  </div>
+                  <span className="text-xl font-bold">Recusar</span>
+                  <span className="text-sm opacity-90 font-medium">Não tenho interesse</span>
                 </Button>
               </div>
             </CardContent>
@@ -361,36 +398,48 @@ export default function PublicProposalPage() {
 
         {/* Status Message */}
         {proposal.status !== 'EM_ANALISE' && (
-          <Card className={`border-2 ${
-            proposal.status === 'APROVADA' ? 'border-green-500 bg-green-50' :
-            proposal.status === 'REJEITADA' ? 'border-red-500 bg-red-50' :
-            proposal.status === 'EM_NEGOCIACAO' ? 'border-blue-500 bg-blue-50' :
-            'border-gray-500 bg-gray-50'
+          <Card className={`border-none shadow-2xl overflow-hidden ${
+            proposal.status === 'APROVADA' ? 'bg-gradient-to-br from-green-50 to-emerald-50' :
+            proposal.status === 'REJEITADA' ? 'bg-gradient-to-br from-red-50 to-rose-50' :
+            proposal.status === 'EM_NEGOCIACAO' ? 'bg-gradient-to-br from-blue-50 to-indigo-50' :
+            'bg-gradient-to-br from-gray-50 to-slate-50'
           }`}>
-            <CardContent className="pt-6 text-center">
+            <div className={`h-2 ${
+              proposal.status === 'APROVADA' ? 'bg-gradient-to-r from-green-600 to-emerald-600' :
+              proposal.status === 'REJEITADA' ? 'bg-gradient-to-r from-red-600 to-rose-600' :
+              proposal.status === 'EM_NEGOCIACAO' ? 'bg-gradient-to-r from-blue-600 to-indigo-600' :
+              'bg-gradient-to-r from-gray-600 to-slate-600'
+            }`}></div>
+            <CardContent className="pt-12 pb-12 text-center">
               {proposal.status === 'APROVADA' && (
                 <>
-                  <CheckCircle className="h-16 w-16 mx-auto text-green-600 mb-4" />
-                  <h3 className="text-2xl font-bold text-green-800 mb-2">Proposta Aprovada!</h3>
-                  <p className="text-green-700">
+                  <div className="inline-flex p-6 bg-green-100 rounded-full mb-6">
+                    <CheckCircle className="h-20 w-20 text-green-600" />
+                  </div>
+                  <h3 className="text-4xl font-bold text-green-800 mb-4">Proposta Aprovada!</h3>
+                  <p className="text-lg text-green-700 max-w-2xl mx-auto leading-relaxed">
                     Obrigado por aceitar nossa proposta. Entraremos em contato em breve para dar continuidade.
                   </p>
                 </>
               )}
               {proposal.status === 'REJEITADA' && (
                 <>
-                  <XCircle className="h-16 w-16 mx-auto text-red-600 mb-4" />
-                  <h3 className="text-2xl font-bold text-red-800 mb-2">Proposta Recusada</h3>
-                  <p className="text-red-700">
+                  <div className="inline-flex p-6 bg-red-100 rounded-full mb-6">
+                    <XCircle className="h-20 w-20 text-red-600" />
+                  </div>
+                  <h3 className="text-4xl font-bold text-red-800 mb-4">Proposta Recusada</h3>
+                  <p className="text-lg text-red-700 max-w-2xl mx-auto leading-relaxed">
                     Agradecemos seu tempo em avaliar nossa proposta. Ficamos à disposição para futuras oportunidades.
                   </p>
                 </>
               )}
               {proposal.status === 'EM_NEGOCIACAO' && (
                 <>
-                  <MessageSquare className="h-16 w-16 mx-auto text-blue-600 mb-4" />
-                  <h3 className="text-2xl font-bold text-blue-800 mb-2">Em Negociação</h3>
-                  <p className="text-blue-700">
+                  <div className="inline-flex p-6 bg-blue-100 rounded-full mb-6">
+                    <MessageSquare className="h-20 w-20 text-blue-600" />
+                  </div>
+                  <h3 className="text-4xl font-bold text-blue-800 mb-4">Em Negociação</h3>
+                  <p className="text-lg text-blue-700 max-w-2xl mx-auto leading-relaxed">
                     Recebemos sua solicitação. Nossa equipe entrará em contato em breve para conversar sobre os detalhes.
                   </p>
                 </>
@@ -400,28 +449,67 @@ export default function PublicProposalPage() {
         )}
 
         {/* Download and Print Buttons */}
-        <div className="flex gap-3 justify-center print:hidden flex-wrap">
-          <Button variant="outline" onClick={handleView} size="lg">
-            <FileText className="h-4 w-4 mr-2" />
+        <div className="flex gap-4 justify-center print:hidden flex-wrap">
+          <Button 
+            variant="outline" 
+            onClick={handleView} 
+            size="lg"
+            className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition-all duration-300 shadow-md hover:shadow-lg px-8"
+          >
+            <FileText className="h-5 w-5 mr-2" />
             Visualizar PDF
           </Button>
-          <Button variant="outline" onClick={handleDownload} size="lg">
-            <Download className="h-4 w-4 mr-2" />
+          <Button 
+            variant="outline" 
+            onClick={handleDownload} 
+            size="lg"
+            className="border-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white transition-all duration-300 shadow-md hover:shadow-lg px-8"
+          >
+            <Download className="h-5 w-5 mr-2" />
             Baixar PDF
           </Button>
-          <Button variant="outline" onClick={handlePrint} size="lg">
-            <Printer className="h-4 w-4 mr-2" />
+          <Button 
+            variant="outline" 
+            onClick={handlePrint} 
+            size="lg"
+            className="border-2 border-slate-600 text-slate-600 hover:bg-slate-600 hover:text-white transition-all duration-300 shadow-md hover:shadow-lg px-8"
+          >
+            <Printer className="h-5 w-5 mr-2" />
             Imprimir
           </Button>
         </div>
 
         {/* Footer */}
-        <Card className="print:border-t-2">
-          <CardContent className="pt-6 text-center text-sm text-muted-foreground">
-            <p className="font-semibold text-foreground">FGlink - Serviços de Limpeza Profissional</p>
-            <p className="mt-1">Email: contato@fglink.com | Telefone: (11) 1234-5678</p>
-            <p className="mt-2 text-xs">Proposta válida por 30 dias a partir da data de emissão</p>
-            <p className="mt-1 text-xs">Data de emissão: {formatDate(proposal.createdAt)}</p>
+        <Card className="border-none shadow-lg bg-gradient-to-r from-slate-800 to-slate-900 text-white print:border-t-2">
+          <CardContent className="pt-8 pb-8 text-center">
+            <div className="max-w-3xl mx-auto space-y-4">
+              <div className="flex items-center justify-center gap-2 mb-4">
+                <div className="p-2 bg-white/10 rounded-lg">
+                  <Building2 className="h-6 w-6" />
+                </div>
+                <p className="text-2xl font-bold">FG Services</p>
+              </div>
+              <p className="text-lg font-semibold text-blue-200">Terceirização de Serviços</p>
+              <div className="flex items-center justify-center gap-6 text-sm text-slate-300 flex-wrap">
+                <span className="flex items-center gap-2">
+                  <Mail className="h-4 w-4" />
+                  contato@fgservices.com.br
+                </span>
+                <span className="flex items-center gap-2">
+                  <Phone className="h-4 w-4" />
+                  (81) 99123-6035
+                </span>
+              </div>
+              <div className="border-t border-white/20 pt-4 mt-4 space-y-2">
+                <p className="text-sm text-slate-400">
+                  Proposta válida por 30 dias a partir da data de emissão
+                </p>
+                <p className="text-xs text-slate-500 flex items-center justify-center gap-2">
+                  <Calendar className="h-3 w-3" />
+                  Data de emissão: {formatDate(proposal.createdAt)}
+                </p>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>

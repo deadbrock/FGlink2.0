@@ -1,0 +1,60 @@
+{
+  "fileName": "template-1764263044912.pdf",
+  "fields": [
+    {
+      "id": "empresa",
+      "name": "empresa",
+      "type": "text",
+      "x": 550,
+      "y": 266,
+      "page": 14,
+      "label": "🏢 Empresa (Nome do Cliente)"
+    },
+    {
+      "id": "fone",
+      "name": "fone",
+      "type": "text",
+      "x": 790,
+      "y": 264,
+      "page": 14,
+      "label": "📞 Telefone"
+    },
+    {
+      "id": "contato",
+      "name": "contato",
+      "type": "text",
+      "x": 614,
+      "y": 328,
+      "page": 14,
+      "label": "👤 Contato"
+    },
+    {
+      "id": "emailCliente",
+      "name": "emailCliente",
+      "type": "text",
+      "x": 817,
+      "y": 329,
+      "page": 14,
+      "label": "📧 Email"
+    },
+    {
+      "id": "items",
+      "name": "items",
+      "type": "table",
+      "x": 562,
+      "y": 454,
+      "page": 14,
+      "label": "📊 Tabela de Itens"
+    },
+    {
+      "id": "valorTotal",
+      "name": "valorTotal",
+      "type": "text",
+      "x": 894,
+      "y": 445,
+      "page": 14,
+      "label": "💰 Valor Total"
+    }
+  ],
+  "createdAt": "2025-11-27T17:12:25.364Z"
+}

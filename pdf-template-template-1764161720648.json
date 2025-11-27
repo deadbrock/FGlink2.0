@@ -1,0 +1,54 @@
+{
+  "fileName": "template-1764161720648.pdf",
+  "fields": [
+    {
+      "id": 1764161728960,
+      "name": "QUADRO RESUMIDO",
+      "type": "table",
+      "x": 0,
+      "y": 0,
+      "page": 1
+    },
+    {
+      "id": 1764162041098,
+      "name": "Nome do cliente",
+      "type": "text",
+      "x": 0,
+      "y": 0,
+      "page": 1
+    },
+    {
+      "id": 1764162066158,
+      "name": "numero da proposta",
+      "type": "number",
+      "x": 0,
+      "y": 0,
+      "page": 1
+    },
+    {
+      "id": 1764162082202,
+      "name": "Nome do cliente",
+      "type": "text",
+      "x": 0,
+      "y": 0,
+      "page": 1
+    },
+    {
+      "id": 1764162098424,
+      "name": "data",
+      "type": "date",
+      "x": 0,
+      "y": 0,
+      "page": 1
+    },
+    {
+      "id": 1764162108616,
+      "name": "",
+      "type": "text",
+      "x": 0,
+      "y": 0,
+      "page": 1
+    }
+  ],
+  "createdAt": "2025-11-26T13:01:58.564Z"
+}
