@@ -57,8 +57,8 @@ export async function GET(
 
     console.log('✅ PDF do template gerado com sucesso!')
 
-    // Retornar PDF
-    return new NextResponse(pdfBuffer, {
+    // Retornar PDF (converter Buffer para Uint8Array)
+    return new NextResponse(new Uint8Array(pdfBuffer), {
       headers: {
         'Content-Type': 'application/pdf',
         'Content-Disposition': `inline; filename="Proposta-${proposal.number}.pdf"`,
