@@ -166,7 +166,7 @@ export async function GET(request: NextRequest) {
 
           const paid = await prisma.commission.aggregate({
             _sum: { amount: true },
-            where: { userId: user.id, status: 'PAGA', ...dateFilter }
+            where: { userId: user.id, status: 'RECEBIDA', ...dateFilter }
           })
 
           return {

@@ -48,12 +48,12 @@ export async function GET() {
       where: { ...userFilter, status: 'REJEITADA' }
     })
 
-    // Get total commissions
+    // Get total commissions (received)
     const commissionsSum = await prisma.commission.aggregate({
       _sum: { amount: true },
       where: { 
         ...userFilter,
-        status: 'PAGA' 
+        status: 'RECEBIDA' 
       }
     })
 
