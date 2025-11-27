@@ -134,7 +134,7 @@ export async function generateOfficialProposalPDF(proposal: any, customText?: st
           Encaminhamos a seguir a proposta comercial de número: <strong>${proposal.number}</strong>
         </p>
 
-        ${(customText || config.introText).split('\n\n').map(p => `<p style="margin-bottom: 15px;">${p}</p>`).join('')}
+        ${(customText || config.introText).split('\n\n').map((p: string) => `<p style="margin-bottom: 15px;">${p}</p>`).join('')}
 
         <p style="margin-bottom: 15px;">
           <strong>O objetivo desta proposta é atender ${proposal.client.name} nos seguintes serviços:</strong>
