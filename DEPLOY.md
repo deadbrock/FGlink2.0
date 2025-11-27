@@ -37,30 +37,29 @@ NODE_ENV=production
 openssl rand -base64 32
 ```
 
-### 4. Atualizar Schema do Prisma
+### 4. ✅ PostgreSQL Já Configurado
 
-Atualize o `prisma/schema.prisma` para usar PostgreSQL:
+O schema já está configurado para PostgreSQL:
 
 ```prisma
 datasource db {
-  provider = "postgresql"  // Mudou de sqlite para postgresql
+  provider = "postgresql"  // ✅ Já configurado!
   url      = env("DATABASE_URL")
 }
 ```
 
+⚠️ **Importante:** A variável `DATABASE_URL` será fornecida automaticamente pelo Railway quando você adicionar o PostgreSQL!
+
 ### 5. Build e Deploy
 
-O Railway detectará automaticamente e fará o deploy. Se necessário, configure:
+O Railway detectará automaticamente e fará o deploy usando o `nixpacks.toml`.
 
-**Build Command:**
-```bash
-npm ci && npx prisma generate && npx prisma db push && npm run build
-```
+**Comandos automáticos:**
+- Install: `npm install --legacy-peer-deps`
+- Build: `npm run build` (que inclui `prisma generate`)
+- Start: `npm run start`
 
-**Start Command:**
-```bash
-npm run start
-```
+**Não é necessário configurar manualmente!** O Railway usará as configurações do `nixpacks.toml`.
 
 ### 6. Executar Migrations
 
