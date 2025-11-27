@@ -97,9 +97,12 @@ export function UserDialog({ open, onClose, user }: UserDialogProps) {
       const method = user ? 'PUT' : 'POST'
 
       // Se estiver editando e não preencheu senha, não enviar
-      const dataToSend = { ...formData }
+      let dataToSend: any
       if (user && !formData.password) {
-        delete dataToSend.password
+        const { password, ...rest } = formData
+        dataToSend = rest
+      } else {
+        dataToSend = formData
       }
 
       const response = await fetch(url, {
