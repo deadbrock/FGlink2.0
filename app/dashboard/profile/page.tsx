@@ -32,15 +32,32 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (session?.user) {
-      setFormData({
-        name: session.user.name || '',
-        email: session.user.email || '',
-        currentPassword: '',
-        newPassword: '',
-        confirmPassword: '',
-        avatarUrl: session.user.avatarUrl || '',
-      })
-      setAvatarPreview(session.user.avatarUrl || null)
+      // Buscar dados completos do usuário (incluindo avatar)
+      fetch('/api/profile')
+        .then(res => res.json())
+        .then(userData => {
+          setFormData({
+            name: userData.name || '',
+            email: userData.email || '',
+            currentPassword: '',
+            newPassword: '',
+            confirmPassword: '',
+            avatarUrl: userData.avatarUrl || '',
+          })
+          setAvatarPreview(userData.avatarUrl || null)
+        })
+        .catch(err => {
+          console.error('Erro ao carregar perfil:', err)
+          // Fallback para dados da sessão
+          setFormData({
+            name: session.user.name || '',
+            email: session.user.email || '',
+            currentPassword: '',
+            newPassword: '',
+            confirmPassword: '',
+            avatarUrl: '',
+          })
+        })
     }
   }, [session])
 

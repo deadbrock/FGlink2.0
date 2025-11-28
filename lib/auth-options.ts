@@ -38,7 +38,6 @@ export const authOptions: NextAuthOptions = {
           email: user.email,
           name: user.name,
           role: user.role,
-          avatarUrl: user.avatarUrl || undefined,
         }
       }
     })
@@ -48,7 +47,6 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.role = user.role
         token.id = user.id
-        token.avatarUrl = user.avatarUrl
       }
       return token
     },
@@ -56,7 +54,8 @@ export const authOptions: NextAuthOptions = {
       if (session?.user) {
         session.user.role = token.role as string
         session.user.id = token.id as string
-        session.user.avatarUrl = token.avatarUrl as string
+        // Não incluir avatarUrl na sessão para evitar headers muito grandes
+        // O avatar será buscado diretamente do banco quando necessário
       }
       return session
     }

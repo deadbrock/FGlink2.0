@@ -2,6 +2,40 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAuth } from '@/lib/auth'
 
+// GET - Buscar dados do perfil do usuário logado
+export async function GET() {
+  try {
+    const session = await requireAuth()
+
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        avatarUrl: true,
+      },
+    })
+
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Usuário não encontrado' },
+        { status: 404 }
+      )
+    }
+
+    return NextResponse.json(user)
+  } catch (error: any) {
+    console.error('❌ Erro ao buscar perfil:', error)
+    return NextResponse.json(
+      { error: error.message || 'Erro ao buscar perfil' },
+      { status: 500 }
+    )
+  }
+}
+
+// PUT - Atualizar perfil
 export async function PUT(request: Request) {
   try {
     const session = await requireAuth()

@@ -5,14 +5,14 @@ declare module "next-auth" {
     user: {
       id: string
       role: string
-      avatarUrl?: string
+      // avatarUrl removido para evitar headers muito grandes
     } & DefaultSession["user"]
   }
 
   interface User {
     id: string
     role: string
-    avatarUrl?: string
+    // avatarUrl não é mais parte da sessão JWT
   }
 }
 
@@ -20,6 +20,6 @@ declare module "next-auth/jwt" {
   interface JWT {
     id: string
     role: string
-    avatarUrl?: string
+    // avatarUrl removido para evitar JWT muito grande
   }
 }

@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useSession, signOut } from 'next-auth/react'
+import { useState, useEffect } from 'react'
 import { cn } from '@/lib/utils'
 import {
   LayoutDashboard,
@@ -67,6 +68,16 @@ const menuItems = [
 
 function UserInfo() {
   const { data: session } = useSession()
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (session?.user) {
+      fetch('/api/profile')
+        .then(res => res.json())
+        .then(userData => setAvatarUrl(userData.avatarUrl || null))
+        .catch(() => setAvatarUrl(null))
+    }
+  }, [session])
 
   if (!session?.user) return null
 
@@ -79,9 +90,9 @@ function UserInfo() {
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-3 p-3 bg-slate-800 rounded-lg">
-        {session.user.avatarUrl ? (
+        {avatarUrl ? (
           <img
-            src={session.user.avatarUrl}
+            src={avatarUrl}
             alt={session.user.name || 'Avatar'}
             className="w-10 h-10 rounded-full object-cover border-2 border-primary"
           />
