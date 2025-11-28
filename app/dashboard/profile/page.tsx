@@ -76,6 +76,12 @@ export default function ProfilePage() {
     setMessage(null)
 
     try {
+      console.log('📤 Enviando dados:', {
+        name: formData.name,
+        email: formData.email,
+        avatarUrl: formData.avatarUrl ? 'presente' : 'vazio',
+      })
+
       const response = await fetch('/api/profile', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -86,25 +92,34 @@ export default function ProfilePage() {
         }),
       })
 
+      const data = await response.json()
+      console.log('📥 Resposta da API:', data)
+
       if (response.ok) {
-        const updatedUser = await response.json()
         setMessage({ type: 'success', text: 'Perfil atualizado com sucesso!' })
         
         // Atualizar sessão
+        console.log('🔄 Atualizando sessão...')
         await update({
           ...session,
           user: {
             ...session?.user,
-            name: updatedUser.name,
-            email: updatedUser.email,
-            avatarUrl: updatedUser.avatarUrl,
+            name: data.name,
+            email: data.email,
+            avatarUrl: data.avatarUrl,
           },
         })
+        console.log('✅ Sessão atualizada!')
+
+        // Recarregar a página após 1 segundo para garantir que a sessão foi atualizada
+        setTimeout(() => {
+          window.location.reload()
+        }, 1000)
       } else {
-        const error = await response.json()
-        setMessage({ type: 'error', text: error.error || 'Erro ao atualizar perfil' })
+        setMessage({ type: 'error', text: data.error || 'Erro ao atualizar perfil' })
       }
     } catch (error) {
+      console.error('❌ Erro:', error)
       setMessage({ type: 'error', text: 'Erro ao atualizar perfil' })
     } finally {
       setLoading(false)
