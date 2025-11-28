@@ -67,12 +67,12 @@ export default function DashboardPage() {
   const { data: session } = useSession()
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-slate-900">
+        <h1 className="text-2xl md:text-3xl font-bold text-slate-900">
           Olá, {session?.user?.name || 'Usuário'}! 👋
         </h1>
-        <p className="text-slate-500 mt-1">
+        <p className="text-sm md:text-base text-slate-500 mt-1">
           {session?.user?.role === 'ADMIN' 
             ? 'Visão geral do negócio' 
             : 'Suas propostas e comissões'}
@@ -80,7 +80,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 md:gap-6 grid-cols-2 lg:grid-cols-4">
         <Card className="border-l-4 border-l-blue-500">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
@@ -147,7 +147,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Status Cards */}
-      <div className="grid gap-6 md:grid-cols-3">
+      <div className="grid gap-3 md:gap-6 grid-cols-1 md:grid-cols-3">
         <Card className="bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200">
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
@@ -192,7 +192,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Charts */}
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-4 md:gap-6 grid-cols-1 lg:grid-cols-2">
         <Card>
           <CardHeader>
             <CardTitle>Receita por Mês</CardTitle>

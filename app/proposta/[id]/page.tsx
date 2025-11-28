@@ -165,26 +165,28 @@ export default function PublicProposalPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 py-12 px-4">
-      <div className="max-w-5xl mx-auto space-y-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 py-4 md:py-12 px-3 md:px-4">
+      <div className="max-w-5xl mx-auto space-y-4 md:space-y-8">
         {/* Header */}
         <Card className="border-none shadow-2xl bg-white overflow-hidden">
           <div className="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 h-2"></div>
-          <CardHeader className="text-center pb-8 pt-10">
+          <CardHeader className="text-center pb-6 md:pb-8 pt-6 md:pt-10 px-4">
             <div className="flex justify-center mb-0">
               <img 
                 src="/logo-fgservices.png" 
                 alt="FG Services" 
-                className="h-41 w-41"
+                className="h-24 w-24 md:h-32 md:w-32 lg:h-41 lg:w-41"
                 onError={(e) => {
                   e.currentTarget.style.display = 'none'
                 }}
               />
             </div>
-            <div className="space-y-3">
-              <CardTitle className="text-4xl font-bold text-slate-800">Proposta Comercial</CardTitle>
+            <div className="space-y-2 md:space-y-3">
+              <CardTitle className="text-2xl md:text-3xl lg:text-4xl font-bold text-slate-800">
+                Proposta Comercial
+              </CardTitle>
               <div className="flex items-center justify-center gap-2">
-                <Badge className="text-lg px-6 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700">
+                <Badge className="text-sm md:text-base lg:text-lg px-4 md:px-6 py-1.5 md:py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700">
                   {proposal.number}
                 </Badge>
               </div>
@@ -278,24 +280,24 @@ export default function PublicProposalPage() {
               Itens da Proposta
             </CardTitle>
           </CardHeader>
-          <CardContent className="pt-6">
-            <div className="overflow-x-auto">
-              <Table>
+          <CardContent className="pt-6 px-2 md:px-6">
+            <div className="overflow-x-auto -mx-2 md:mx-0">
+              <Table className="min-w-full">
                 <TableHeader>
                   <TableRow className="bg-slate-50 hover:bg-slate-100">
-                    <TableHead className="font-bold text-slate-700">Descrição</TableHead>
-                    <TableHead className="text-right font-bold text-slate-700">Quant. de Postos</TableHead>
-                    <TableHead className="text-right font-bold text-slate-700">Valor Unit. do Posto</TableHead>
-                    <TableHead className="text-right font-bold text-slate-700">Total Mensal</TableHead>
+                    <TableHead className="font-bold text-slate-700 text-xs md:text-sm">Descrição</TableHead>
+                    <TableHead className="text-right font-bold text-slate-700 text-xs md:text-sm whitespace-nowrap">Quant.</TableHead>
+                    <TableHead className="text-right font-bold text-slate-700 text-xs md:text-sm whitespace-nowrap">Valor Unit.</TableHead>
+                    <TableHead className="text-right font-bold text-slate-700 text-xs md:text-sm whitespace-nowrap">Total</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {proposal.items?.map((item: any, index: number) => (
                     <TableRow key={index} className="hover:bg-blue-50 transition-colors">
-                      <TableCell className="font-medium text-slate-800">{item.description}</TableCell>
-                      <TableCell className="text-right text-slate-700">{item.quantity}</TableCell>
-                      <TableCell className="text-right text-slate-700">{formatCurrency(item.unitPrice)}</TableCell>
-                      <TableCell className="text-right font-bold text-blue-600">
+                      <TableCell className="font-medium text-slate-800 text-xs md:text-sm">{item.description}</TableCell>
+                      <TableCell className="text-right text-slate-700 text-xs md:text-sm">{item.quantity}</TableCell>
+                      <TableCell className="text-right text-slate-700 text-xs md:text-sm whitespace-nowrap">{formatCurrency(item.unitPrice)}</TableCell>
+                      <TableCell className="text-right font-bold text-blue-600 text-xs md:text-sm whitespace-nowrap">
                         {formatCurrency(item.totalPrice)}
                       </TableCell>
                     </TableRow>
@@ -310,14 +312,14 @@ export default function PublicProposalPage() {
         <Card className="border-none shadow-2xl bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-700 text-white overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32"></div>
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full -ml-24 -mb-24"></div>
-          <CardContent className="pt-8 pb-8 relative z-10">
-            <div className="flex justify-between items-center">
-              <div>
-                <p className="text-blue-100 text-sm font-medium mb-1">Valor Total da Proposta</p>
-                <span className="text-2xl font-bold">Valor Total Mensal</span>
+          <CardContent className="pt-6 md:pt-8 pb-6 md:pb-8 px-4 md:px-6 relative z-10">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4 md:gap-0">
+              <div className="text-center md:text-left">
+                <p className="text-blue-100 text-xs md:text-sm font-medium mb-1">Valor Total da Proposta</p>
+                <span className="text-lg md:text-2xl font-bold">Valor Total Mensal</span>
               </div>
-              <div className="text-right">
-                <span className="text-5xl font-black tracking-tight">
+              <div className="text-center md:text-right">
+                <span className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tight">
                   {formatCurrency(proposal.totalValue)}
                 </span>
               </div>

@@ -56,6 +56,17 @@
   body {
     @apply bg-background text-foreground;
   }
+  
+  /* Melhorar legibilidade em mobile */
+  html {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* Melhorar touch targets em mobile */
+  button, a, input, select, textarea {
+    @apply touch-manipulation;
+  }
 }
 
 /* Custom scrollbar */

@@ -15,6 +15,8 @@ import {
   Sparkles,
   UserCircle,
   LogOut,
+  Menu,
+  X,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
@@ -125,6 +127,12 @@ function UserInfo() {
 export function Sidebar() {
   const pathname = usePathname()
   const { data: session } = useSession()
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+
+  // Fechar menu mobile ao mudar de rota
+  useEffect(() => {
+    setIsMobileMenuOpen(false)
+  }, [pathname])
 
   // Filtrar itens do menu baseado no role do usuário
   const filteredMenuItems = menuItems.filter((item) => {
@@ -151,51 +159,76 @@ export function Sidebar() {
   })
 
   return (
-    <div className="flex h-full w-64 flex-col bg-gradient-to-b from-slate-900 to-slate-800 text-white">
-      <div className="flex h-16 items-center gap-2 border-b border-slate-700 px-6">
-        <img 
-          src="/logo-fglink.png" 
-          alt="FGlink Logo" 
-          className="w-16 h-16 object-contain"
-          onError={(e) => {
-            e.currentTarget.style.display = 'none'
-            const fallback = e.currentTarget.nextElementSibling as HTMLElement
-            if (fallback) fallback.style.display = 'flex'
-          }}
+    <>
+      {/* Mobile Menu Button */}
+      <button
+        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-slate-900 text-white rounded-lg shadow-lg"
+        aria-label="Toggle menu"
+      >
+        {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+      </button>
+
+      {/* Overlay para mobile */}
+      {isMobileMenuOpen && (
+        <div
+          className="lg:hidden fixed inset-0 bg-black/50 z-40"
+          onClick={() => setIsMobileMenuOpen(false)}
         />
-        <div className="hidden items-center justify-center w-10 h-10 bg-primary rounded-xl">
-          <Sparkles className="w-6 h-6" />
+      )}
+
+      {/* Sidebar */}
+      <div
+        className={cn(
+          "fixed lg:static inset-y-0 left-0 z-40 flex h-full w-64 flex-col bg-gradient-to-b from-slate-900 to-slate-800 text-white transition-transform duration-300 ease-in-out",
+          isMobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+        )}
+      >
+        <div className="flex h-16 items-center gap-2 border-b border-slate-700 px-6">
+          <img 
+            src="/logo-fglink.png" 
+            alt="FGlink Logo" 
+            className="w-12 h-12 object-contain"
+            onError={(e) => {
+              e.currentTarget.style.display = 'none'
+              const fallback = e.currentTarget.nextElementSibling as HTMLElement
+              if (fallback) fallback.style.display = 'flex'
+            }}
+          />
+          <div className="hidden items-center justify-center w-10 h-10 bg-primary rounded-xl">
+            <Sparkles className="w-6 h-6" />
+          </div>
+          <div>
+            <h1 className="text-lg lg:text-xl font-bold">FGlink</h1>
+            <p className="text-xs text-slate-400">v2.0</p>
+          </div>
         </div>
-        <div>
-          <h1 className="text-xl font-bold">FGlink</h1>
-          <p className="text-xs text-slate-400">v2.0</p>
+        <nav className="flex-1 space-y-1 px-3 py-4 overflow-y-auto">
+          {filteredMenuItems.map((item) => {
+            const Icon = item.icon
+            const isActive = pathname === item.href
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all hover:bg-slate-700/50',
+                  isActive
+                    ? 'bg-primary text-white shadow-lg shadow-primary/20'
+                    : 'text-slate-300 hover:text-white'
+                )}
+              >
+                <Icon className="h-5 w-5 flex-shrink-0" />
+                <span className="truncate">{item.title}</span>
+              </Link>
+            )
+          })}
+        </nav>
+        <div className="border-t border-slate-700 p-4">
+          <UserInfo />
         </div>
       </div>
-      <nav className="flex-1 space-y-1 px-3 py-4">
-        {filteredMenuItems.map((item) => {
-          const Icon = item.icon
-          const isActive = pathname === item.href
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all hover:bg-slate-700/50',
-                isActive
-                  ? 'bg-primary text-white shadow-lg shadow-primary/20'
-                  : 'text-slate-300 hover:text-white'
-              )}
-            >
-              <Icon className="h-5 w-5" />
-              {item.title}
-            </Link>
-          )
-        })}
-      </nav>
-      <div className="border-t border-slate-700 p-4">
-        <UserInfo />
-      </div>
-    </div>
+    </>
   )
 }
 
