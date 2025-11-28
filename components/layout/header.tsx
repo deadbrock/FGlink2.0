@@ -26,27 +26,28 @@ export function Header() {
   }
 
   return (
-    <header className="flex h-16 items-center justify-between border-b bg-white px-6">
-      <div>
-        <h2 className="text-xl font-semibold text-slate-900">
+    <header className="flex h-16 items-center justify-between border-b bg-white px-4 md:px-6">
+      {/* Espaço para o menu hamburguer em mobile */}
+      <div className="pl-12 lg:pl-0">
+        <h2 className="text-base md:text-xl font-semibold text-slate-900 truncate">
           Bem-vindo, {session?.user?.name}
         </h2>
-        <p className="text-sm text-slate-500">
+        <p className="text-xs md:text-sm text-slate-500">
           {session?.user?.role === 'ADMIN' && 'Administrador'}
           {session?.user?.role === 'GERENTE' && 'Gerente'}
           {session?.user?.role === 'VENDEDOR' && 'Vendedor'}
         </p>
       </div>
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" className="relative">
+      <div className="flex items-center gap-2 md:gap-4">
+        <Button variant="ghost" size="icon" className="relative hidden md:flex">
           <Bell className="h-5 w-5" />
           <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500" />
         </Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-              <Avatar>
-                <AvatarFallback className="bg-primary text-white">
+            <Button variant="ghost" className="relative h-8 w-8 md:h-10 md:w-10 rounded-full">
+              <Avatar className="h-8 w-8 md:h-10 md:w-10">
+                <AvatarFallback className="bg-primary text-white text-xs md:text-sm">
                   {session?.user?.name ? getInitials(session.user.name) : 'U'}
                 </AvatarFallback>
               </Avatar>
