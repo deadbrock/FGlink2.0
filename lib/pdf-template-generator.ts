@@ -275,11 +275,3 @@ async function fillTableField(page: any, field: TemplateField, items: any[], fon
 
   console.log('✅ Tabela preenchida com sucesso!')
 }
-
-// Exportar para uso no cliente
-export async function downloadTemplateProposalPDF(proposal: any) {
-  // Esta função será chamada do lado do servidor
-  // Retorna o buffer do PDF para download
-  return await generateProposalFromTemplate(proposal)
-}
-
