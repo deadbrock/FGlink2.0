@@ -37,6 +37,6 @@ export async function getCurrentUser() {
     name: session.user.name,
     email: session.user.email,
     role: session.user.role,
-    avatarUrl: session.user.avatarUrl,
+    // avatarUrl removido - buscar diretamente do banco quando necessário
   }
 }
