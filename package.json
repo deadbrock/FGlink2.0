@@ -13,6 +13,7 @@
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio",
+    "db:check": "tsx scripts/check-database.ts",
     "create-admin": "tsx scripts/create-admin.ts"
   },
   "prisma": {
